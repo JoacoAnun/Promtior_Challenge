@@ -4,7 +4,3 @@ sources:
     schema: public
     tables:
       - name: electrical_vehicles_bronze
-  - name: silver
-    schema: public
-    tables:
-      - name: electrical_vehicles_silver
