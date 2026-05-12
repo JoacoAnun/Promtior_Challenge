@@ -1,0 +1,17 @@
+name: electric_vehicles
+
+profile: electric_vehicles
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+clean-targets:
+  - "target"
+  - "dbt_packages"
+
+models:
+  electric_vehicles:
+    +static_analysis: strict
+    staging:
+      +materialized: table
+    marts:
+      +materialized: view
