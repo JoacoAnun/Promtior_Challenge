@@ -7,17 +7,17 @@ from dotenv import load_dotenv
 
 logging.basicConfig(
     level=logging.INFO,
-    format='%(asctime)s - %(levelname)s - %(message)s',
+    format="%(asctime)s - %(levelname)s - %(message)s",
 )
 
 load_dotenv()
 URL = os.getenv("URL")
 
+
 def download_csv(url: str) -> None:
     """
     Downloads the CSV file from the given URL and saves it to a file.
     """
-
 
     try:
         response = requests.get(url)
@@ -28,7 +28,6 @@ def download_csv(url: str) -> None:
             f.write(response.text)
         logging.info("CSV file downloaded successfully")
 
-
     except requests.exceptions.HTTPError as e:
         logging.error(f"HTTP error: {e}")
         raise e
@@ -36,6 +35,6 @@ def download_csv(url: str) -> None:
         logging.error(f"Error: {e}")
         raise e
 
+
 if __name__ == "__main__":
     download_csv(URL)
-    
