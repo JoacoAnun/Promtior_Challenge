@@ -36,7 +36,7 @@ SELECT
                 ' ', 1
             )::DECIMAL
         else null
-    end as latitude,
+    end as longitude,
     CASE 
         WHEN "Vehicle Location" LIKE 'POINT %' 
         	then SPLIT_PART(
@@ -44,7 +44,7 @@ SELECT
                 ' ', 2
             )::DECIMAL
         else null
-    end as longitude,
+    end as latitude,
     "Electric Utility" AS electric_utility,
     "2020 Census Tract" AS census_tract_2020
 FROM {{ source('bronze', 'electrical_vehicles_bronze') }}
