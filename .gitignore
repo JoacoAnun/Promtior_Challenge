@@ -2,3 +2,8 @@
 data
 .vscode
 logs
+*.log
+airflow.*
+*.generated
+__pycache__
+*.pyc
