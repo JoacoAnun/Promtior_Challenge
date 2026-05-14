@@ -19,12 +19,15 @@ def download_csv(url: str) -> None:
     Downloads the CSV file from the given URL and saves it to a file.
     """
 
+    root_path = os.getenv("AIRFLOW_HOME", os.getcwd())
+    data_dir = os.path.join(root_path, "data")
+    os.makedirs(data_dir, exist_ok=True)
+    file_path = os.path.join(data_dir, "data.csv")
     try:
         response = requests.get(url)
         response.raise_for_status()
 
-        os.makedirs("data", exist_ok=True)
-        with open("data/data.csv", "w") as f:
+        with open(file_path, "w") as f:
             f.write(response.text)
         logging.info("CSV file downloaded successfully")
 

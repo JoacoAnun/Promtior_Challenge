@@ -29,7 +29,11 @@ def load_data() -> None:
         engine = create_engine(
             f"postgresql://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{DB_NAME}"
         )
-        df = pd.read_csv("data/data.csv")
+
+        project_root = os.getenv("AIRFLOW_HOME", os.getcwd())
+        data_path = os.path.join(project_root, "data", "data.csv")
+
+        df = pd.read_csv(data_path)
         logging.info("Uploading data to the database")
         df.to_sql(
             "electrical_vehicles_bronze", engine, if_exists="replace", index=False
