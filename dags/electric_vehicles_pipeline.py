@@ -2,10 +2,17 @@ from airflow import DAG
 from airflow.operators.bash import BashOperator
 from datetime import datetime
 import os
+import sys
 
 PROJECT_ROOT = os.getenv("AIRFLOW_HOME", os.getcwd())
-PYTHON_PATH = f"{PROJECT_ROOT}/.venv/bin/python"
+PYTHON_PATH = sys.executable
 DBT_PATH = f"{PROJECT_ROOT}/electric_vehicles"
+
+"""
+For simple local development I used bash operators.
+For production is recommended to send the tasks to the system that process information rather than do it on the Airflow worker.
+Airflow should always be used as a orchestrator, and not execute the heavy lifting tasks.
+"""
 
 with DAG(
     dag_id="electric_vehicles_pipeline",
