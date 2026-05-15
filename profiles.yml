@@ -1,0 +1,12 @@
+electric_vehicles:
+  outputs:
+    dev:
+      type: postgres
+      host: postgres
+      user: postgres
+      password: postgres
+      port: 5432
+      database: postgres
+      schema: public
+      threads: 1
+  target: dev
