@@ -3,6 +3,7 @@ from airflow.operators.bash import BashOperator
 from datetime import datetime
 import os
 import sys
+from datetime import timedelta
 
 PROJECT_ROOT = os.getenv("AIRFLOW_HOME", os.getcwd())
 PYTHON_PATH = sys.executable
@@ -14,12 +15,20 @@ For production is recommended to send the tasks to the system that process infor
 Airflow should always be used as a orchestrator, and not execute the heavy lifting tasks.
 """
 
+default_args = {
+    "retries": 3,
+    "retry_delay": timedelta(seconds=5),
+    "retry_exponential_backoff": True,
+    "max_retry_delay": timedelta(seconds=60),
+}
+
 with DAG(
     dag_id="electric_vehicles_pipeline",
     start_date=datetime(2026, 1, 1),
     schedule="@once",
     catchup=True,
     is_paused_upon_creation=False,
+    default_args=default_args,
 ) as dag:
     extract_task = BashOperator(
         task_id="extract_data",
