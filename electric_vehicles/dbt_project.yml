@@ -11,6 +11,9 @@ clean-targets:
 models:
   electric_vehicles:
     +static_analysis: strict
+    +persist_docs:
+      relation: true
+      columns: true
     staging:
       +materialized: table
     marts:
