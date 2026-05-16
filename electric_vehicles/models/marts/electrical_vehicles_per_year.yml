@@ -1,0 +1,12 @@
+version: 2
+
+models:
+  - name: electrical_vehicles_per_year
+    description: "View that shows the count of electric vehicles registered per year."
+    columns:
+      - name: model_year
+        description: "Model year of the registered electric vehicles."
+        tests:
+          - not_null
+      - name: count
+        description: "Count of electric vehicles registered for the specific model year."
