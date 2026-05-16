@@ -1,0 +1,12 @@
+version: 2
+
+models:
+  - name: top_10_electrical_vehicles_registration_count
+    description: "Top 10 electric vehicles by registration count."
+    columns:
+      - name: model
+        description: "Model of the electric vehicle."
+        tests:
+          - not_null
+      - name: vechicles_count
+        description: "Count of electric vehicles registered for the specific model."
