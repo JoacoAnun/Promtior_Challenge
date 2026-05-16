@@ -1,0 +1,34 @@
+version: 2
+
+models:
+  - name: vehicle_location
+    description: "Registered electric vehicles with their location."
+    columns:
+      - name: county
+        description: "Name of the county."
+        tests:
+          - not_null
+          
+      - name: city
+        description: "Name of the city."
+        
+      - name: state
+        description: "Name of the state."
+        
+      - name: model_year
+        description: "Model year of the registered electric vehicles."
+        
+      - name: make
+        description: "Make of the electric vehicle."
+        
+      - name: model
+        description: "Model of the electric vehicle."
+        
+      - name: latitude
+        description: "Latitude of the vehicle's location."
+        
+      - name: longitude
+        description: "Longitude of the vehicle's location."
+        
+      - name: is_cafv_eligibility
+        description: "Boolean indicating if the vehicle is eligible for CAFV."
