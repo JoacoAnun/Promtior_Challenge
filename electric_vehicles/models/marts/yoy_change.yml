@@ -1,0 +1,22 @@
+version: 2
+
+models:
+  - name: yoy_change
+    description: "Year-over-year percentage change of registered electric vehicles per county."
+    columns:
+      - name: county
+        description: "Name of the county where the vehicles are registered."
+        tests:
+          - not_null
+          
+      - name: model_year
+        description: "Model year of the registered electric vehicles."
+        
+      - name: registered_vehicles
+        description: "Total count of electric vehicles registered for the specific county and model year."
+        
+      - name: registered_vehicles_previous_year
+        description: "Total count of registered electric vehicles from the preceding year for the same county."
+        
+      - name: yoy_change_prct
+        description: "Percentage change in registered vehicles compared to the previous year."
