@@ -12,6 +12,9 @@ source .venv/bin/activate
 cd electric_vehicles && dbt deps && cd ..
 deactivate
 
+mkdir -p data
+chmod 777 data
+
 echo "Starting Docker services..."
 docker compose up -d
 
