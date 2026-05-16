@@ -3,10 +3,10 @@ electric_vehicles:
     dev:
       type: postgres
       host: postgres
-      user: postgres
-      password: postgres
-      port: 5432
-      database: postgres
+      user: "{{ env_var('POSTGRES_USER') }}"
+      password: "{{ env_var('POSTGRES_PASSWORD') }}"
+      port: "{{ env_var('DB_PORT') | int }}"
+      database: "{{ env_var('POSTGRES_DB') }}"
       schema: public
       threads: 1
   target: dev
