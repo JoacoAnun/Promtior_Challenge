@@ -34,6 +34,10 @@ services:
             POSTGRES_DB: ${POSTGRES_DB}
             DB_PORT: ${DB_PORT}
             URL: ${URL}
+            SUPERSET_HOST: ${SUPERSET_HOST}
+            SUPERSET_PORT: ${SUPERSET_PORT}
+            SUPERSET_ADMIN_USERNAME: ${SUPERSET_ADMIN_USERNAME}
+            SUPERSET_ADMIN_PASSWORD: ${SUPERSET_ADMIN_PASSWORD}
         volumes:
             - ./dags:/opt/airflow/dags
             - ./src:/opt/airflow/src
