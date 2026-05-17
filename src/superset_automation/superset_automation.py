@@ -54,6 +54,29 @@ GRAPH_PAYLOAD = {
             }
         ),
     },
+    "electrical_vehicles_per_year": {
+        "slice_name": "EV Registrations per Year",
+        "viz_type": "echarts_timeseries_bar",
+        "datasource_type": "table",
+        "params": json.dumps(
+            {
+                "viz_type": "echarts_timeseries_bar",
+                "x_axis": "model_year",
+                "metrics": [
+                    {
+                        "expressionType": "SIMPLE",
+                        "column": {"column_name": "count"},
+                        "aggregate": "MAX",
+                        "label": "MAX(count)",
+                    }
+                ],
+                "groupby": [],
+                "contributionMode": None,
+                "row_limit": 50,
+                "y_axis_format": "SMART_NUMBER",
+            }
+        ),
+    },
     "top_10_electrical_vehicles_registration_count": {
         "slice_name": "Top 10 EV Models by Registration Count",
         "viz_type": "table",
