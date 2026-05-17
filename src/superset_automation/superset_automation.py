@@ -2,6 +2,7 @@ import requests
 import logging
 from dotenv import load_dotenv
 import os
+import json
 
 logging.basicConfig(
     level=logging.INFO,
@@ -23,6 +24,32 @@ DB_HOST = os.getenv("DB_HOST")
 DATASETS = {
     "vehicle_location": {"table_name": "vehicle_location"},
     "electrical_vehicles_per_year": {"table_name": "electrical_vehicles_per_year"},
+}
+
+GRAPH_PAYLOAD = {
+    "vehicle_location": {
+        "slice_name": "Vehicle Locations",
+        "viz_type": "deck_scatter",
+        "datasource_type": "table",
+        "params": json.dumps(
+            {
+                "viz_type": "deck_scatter",
+                "spatial": {
+                    "type": "latlong",
+                    "latCol": "latitude",
+                    "lonCol": "longitude",
+                },
+                "color_picker": {"r": 0, "g": 0, "b": 255, "a": 1},
+                "dimension": "is_cafv_eligibility",
+                "color_scheme": "googleCategory20c",
+                "point_radius": 20,
+                "point_radius_fixed": {"type": "fix", "value": 20},
+                "row_limit": 10000,
+                "mapbox_style": "https://tile.openstreetmap.org/{z}/{x}/{y}.png",
+                "autozoom": True,
+            }
+        ),
+    }
 }
 
 
@@ -124,8 +151,44 @@ def create_dataset(session, dataset, table_name):
     logging.info(f"Dataset {dataset} created successfully")
 
 
+def get_dataset_id(session, table_name) -> int:
+    """
+    Gets dataset id for a table name
+    """
+
+    datasets_req = session.get(f"{SUPERSET_URL}/api/v1/dataset/")
+
+    datasets_req.raise_for_status()
+
+    for dataset in datasets_req.json().get("result", []):
+        logging.info(f"{dataset}")
+        if dataset["table_name"] == table_name:
+            return dataset["id"]
+
+    raise ValueError(f"Dataset {table_name} not found in Superset")
+
+
+def create_chart(session, table_name) -> None:
+    """This function creates a chart in Superset."""
+
+    dataset_id = get_dataset_id(session, table_name)
+
+    payload = GRAPH_PAYLOAD[table_name]
+
+    payload["datasource_id"] = dataset_id
+
+    response = session.post(f"{SUPERSET_URL}/api/v1/chart/", json=payload)
+    if not response.ok:
+        logging.error(f"Error: {response.text}")
+        response.raise_for_status()
+
+    logging.info("EV map chart created successfully")
+
+
 if __name__ == "__main__":
     superset_session = create_superset_session()
     create_database_connection(superset_session)
     for dataset in DATASETS:
         create_dataset(superset_session, dataset, DATASETS[dataset]["table_name"])
+
+    create_chart(superset_session, "vehicle_location")
