@@ -18,9 +18,15 @@ chmod 777 data
 echo "Starting Docker services..."
 docker compose up -d
 
+echo "Waiting for Airflow to be ready..."
+until docker compose logs airflow 2>&1 | grep -q "Password for user"; do
+    echo "  Not ready yet, retrying in 10s..."
+    sleep 10
+done
+
 echo "Done. Services running:"
 echo "  Airflow:  http://localhost:8080"
 echo "  Superset: http://localhost:8088"
 echo ""
 echo "Airflow credentials:"
-docker compose logs airflow 2>&1 | grep "Password for user" || echo "  (still starting, run: docker compose logs airflow | grep 'Password for user')"
+docker compose logs airflow 2>&1 | grep "Password for user"
