@@ -8,5 +8,5 @@ models:
         description: "Model of the electric vehicle."
         tests:
           - not_null
-      - name: vechicles_count
+      - name: vehicles_count
         description: "Count of electric vehicles registered for the specific model."
