@@ -46,4 +46,9 @@ with DAG(
         cwd=DBT_PATH,
     )
 
-    extract_task >> load_task >> dbt_transform
+    superset_data_loading = BashOperator(
+        task_id="superset_data_loading",
+        bash_command=f"{PYTHON_PATH} $AIRFLOW_HOME/src/superset_automation/superset_automation.py",
+    )
+
+    extract_task >> load_task >> dbt_transform >> superset_data_loading
