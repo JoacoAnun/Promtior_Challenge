@@ -245,7 +245,9 @@ ORDER BY model_year;
 
 ![1779043501646](image/README/1779043501646.png)
 
-There seems to be a small number of cars with registration year 2027, this could be some pre-release models to the markeQ2 — What are the top 10 electric vehicle models by registration count?
+There seems to be a small number of cars with registration year 2027, this could be some pre-release models to the marke
+
+# Q2 — What are the top 10 electric vehicle models by registration count?
 
 **View:** `top_10_electrical_vehicles_registration_count`
 
@@ -324,9 +326,7 @@ ORDER BY county, model_year;
 
 The first year a county appears will have `NULL` for the YoY columns (no prior data to compare).
 
-Negative values are preset when in an year there are less registrations than the past year.
-
-![1779043638505](image/README/1779043638505.png)
+Negative values are preset when in an year there are less registrations than the past year.![1779043638505](image/README/1779043638505.png)
 
 ---
 
