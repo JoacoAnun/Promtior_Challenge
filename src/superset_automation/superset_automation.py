@@ -241,6 +241,21 @@ def get_dataset_id(session, table_name) -> int:
     raise ValueError(f"Dataset {table_name} not found in Superset")
 
 
+def delete_all_charts(session) -> None:
+    res = session.get(f"{SUPERSET_URL}/api/v1/chart/")
+    res.raise_for_status()
+    charts = res.json().get("result", [])
+    logging.info("Deleting Charts.")
+    if not charts:
+        logging.info("No charts found. Skipping deletion.")
+        return
+    for chart in charts:
+        chart_id = chart["id"]
+        del_res = session.delete(f"{SUPERSET_URL}/api/v1/chart/{chart_id}")
+        del_res.raise_for_status()
+        logging.info(f"Deleted chart {chart_id}")
+
+
 def create_chart(session, table_name) -> None:
     """This function creates a chart in Superset."""
 
@@ -264,5 +279,6 @@ if __name__ == "__main__":
     for dataset in DATASETS:
         create_dataset(superset_session, dataset, DATASETS[dataset]["table_name"])
 
+    delete_all_charts(superset_session)
     for table_name in GRAPH_PAYLOAD:
         create_chart(superset_session, table_name)
