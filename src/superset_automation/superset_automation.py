@@ -24,6 +24,7 @@ DB_HOST = os.getenv("DB_HOST")
 DATASETS = {
     "vehicle_location": {"table_name": "vehicle_location"},
     "electrical_vehicles_per_year": {"table_name": "electrical_vehicles_per_year"},
+    "yoy_change": {"table_name": "yoy_change"},
 }
 
 GRAPH_PAYLOAD = {
@@ -49,7 +50,37 @@ GRAPH_PAYLOAD = {
                 "autozoom": True,
             }
         ),
-    }
+    },
+    "yoy_change": {
+        "slice_name": "YoY Change in EV Registrations by County",
+        "viz_type": "table",
+        "datasource_type": "table",
+        "params": json.dumps(
+            {
+                "viz_type": "table",
+                "all_columns": [
+                    "county",
+                    "model_year",
+                    "registered_vehicles",
+                    "registered_vehicles_previous_year",
+                    "yoy_change_prct",
+                ],
+                "order_by_cols": [],
+                "row_limit": 10000,
+                "include_search": True,
+                "page_length": 25,
+                "adhoc_filters": [
+                    {
+                        "clause": "WHERE",
+                        "comparator": "Asotin",
+                        "expressionType": "SIMPLE",
+                        "operator": "==",
+                        "subject": "county",
+                    }
+                ],
+            }
+        ),
+    },
 }
 
 
@@ -161,7 +192,6 @@ def get_dataset_id(session, table_name) -> int:
     datasets_req.raise_for_status()
 
     for dataset in datasets_req.json().get("result", []):
-        logging.info(f"{dataset}")
         if dataset["table_name"] == table_name:
             return dataset["id"]
 
@@ -182,7 +212,7 @@ def create_chart(session, table_name) -> None:
         logging.error(f"Error: {response.text}")
         response.raise_for_status()
 
-    logging.info("EV map chart created successfully")
+    logging.info(f"Chart for {table_name} created.")
 
 
 if __name__ == "__main__":
@@ -192,3 +222,4 @@ if __name__ == "__main__":
         create_dataset(superset_session, dataset, DATASETS[dataset]["table_name"])
 
     create_chart(superset_session, "vehicle_location")
+    create_chart(superset_session, "yoy_change")
