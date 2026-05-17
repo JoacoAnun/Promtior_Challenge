@@ -25,6 +25,9 @@ DATASETS = {
     "vehicle_location": {"table_name": "vehicle_location"},
     "electrical_vehicles_per_year": {"table_name": "electrical_vehicles_per_year"},
     "yoy_change": {"table_name": "yoy_change"},
+    "top_10_electrical_vehicles_registration_count": {
+        "table_name": "top_10_electrical_vehicles_registration_count"
+    },
 }
 
 GRAPH_PAYLOAD = {
@@ -51,6 +54,22 @@ GRAPH_PAYLOAD = {
             }
         ),
     },
+    "top_10_electrical_vehicles_registration_count": {
+        "slice_name": "Top 10 EV Models by Registration Count",
+        "viz_type": "table",
+        "datasource_type": "table",
+        "params": json.dumps(
+            {
+                "viz_type": "table",
+                "query_mode": "raw",
+                "all_columns": ["model", "vehicles_count"],
+                "order_by_cols": [],
+                "row_limit": 10,
+                "include_search": False,
+                "page_length": 10,
+            }
+        ),
+    },
     "yoy_change": {
         "slice_name": "YoY Change in EV Registrations by County",
         "viz_type": "table",
@@ -58,6 +77,7 @@ GRAPH_PAYLOAD = {
         "params": json.dumps(
             {
                 "viz_type": "table",
+                "query_mode": "raw",
                 "all_columns": [
                     "county",
                     "model_year",
@@ -221,5 +241,5 @@ if __name__ == "__main__":
     for dataset in DATASETS:
         create_dataset(superset_session, dataset, DATASETS[dataset]["table_name"])
 
-    create_chart(superset_session, "vehicle_location")
-    create_chart(superset_session, "yoy_change")
+    for table_name in GRAPH_PAYLOAD:
+        create_chart(superset_session, table_name)
