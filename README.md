@@ -69,8 +69,10 @@ Promtior_Challenge/
 ├── src/
 │   ├── extract/
 │   │   └── extract.py          # Download CSV from API
-│   └── load/
-│       └── load.py             # Load CSV into PostgreSQL
+│   ├── load/
+│   │   └── load.py             # Load CSV into PostgreSQL
+│   └── superset_automation/
+│       └── superset_automation.py  # Create Superset datasets and charts
 ├── electric_vehicles/          # dbt project
 │   ├── dbt_project.yml
 │   ├── packages.yml
@@ -151,7 +153,7 @@ This single command:
 1. Creates a local `.venv` and installs all dependencies from `requirements.txt`
 2. Installs dbt packages (`dbt deps`)
 3. Runs `docker compose up -d` (PostgreSQL + Airflow + Superset)
-4. Prints the Airflow login credentials. If Airflow does not return the credentials, wait a couple of seconds and rerun: `docker compose logs airflow | grep 'Password for user'`.
+4. Prints the Airflow login credentials after service starts running.
 
 Services:
 
@@ -173,11 +175,12 @@ Services:
 
 ### Pipeline tasks (in order)
 
-| Task              | Script                                | What it does                                                                        |
-| ----------------- | ------------------------------------- | ----------------------------------------------------------------------------------- |
-| `extract_data`  | `src/extract/extract.py`            | Downloads CSV from Washington State API →`data/data.csv`                         |
-| `load_data`     | `src/load/load.py`                  | Reads CSV with pandas, loads into `electrical_vehicles_bronze` (replace strategy) |
-| `dbt_transform` | `dbt run` in `electric_vehicles/` | Runs all staging and mart models                                                    |
+| Task                      | Script                                             | What it does                                                                        |
+| ------------------------- | -------------------------------------------------- | ----------------------------------------------------------------------------------- |
+| `extract_data`          | `src/extract/extract.py`                         | Downloads CSV from Washington State API →`data/data.csv`                         |
+| `load_data`             | `src/load/load.py`                               | Reads CSV with pandas, loads into `electrical_vehicles_bronze` (replace strategy) |
+| `dbt_transform`         | `dbt run` in `electric_vehicles/`              | Runs all staging and mart models                                                    |
+| `superset_data_loading` | `src/superset_automation/superset_automation.py` | Registers datasets and creates charts in Superset                                   |
 
 ---
 
@@ -240,11 +243,9 @@ GROUP BY model_year
 ORDER BY model_year;
 ```
 
-![1778849911790](image/README/1778849911790.png)
+![1779043501646](image/README/1779043501646.png)
 
----
-
-### Q2 — What are the top 10 electric vehicle models by registration count?
+There seems to be a small number of cars with registration year 2027, this could be some pre-release models to the markeQ2 — What are the top 10 electric vehicle models by registration count?
 
 **View:** `top_10_electrical_vehicles_registration_count`
 
@@ -258,7 +259,7 @@ ORDER BY vehicles_count DESC
 LIMIT 10;
 ```
 
-![1778851241318](image/README/1778851241318.png)
+![1779043599327](image/README/1779043599327.png)
 
 ---
 
@@ -325,7 +326,30 @@ The first year a county appears will have `NULL` for the YoY columns (no prior d
 
 Negative values are preset when in an year there are less registrations than the past year.
 
-![1778851330595](image/README/1778851330595.png)
+![1779043638505](image/README/1779043638505.png)
+
+---
+
+## Superset Automation
+
+The `superset_data_loading` task runs `src/superset_automation/superset_automation.py` after dbt completes. It is idempotent: it deletes all existing charts before recreating them, and skips dataset/database creation if they already exist.
+
+### What it creates
+
+| Chart                                    | Dataset                                           | Viz type                               | Notes                                                           |
+| ---------------------------------------- | ------------------------------------------------- | -------------------------------------- | --------------------------------------------------------------- |
+| EV Registrations per Year                | `electrical_vehicles_per_year`                  | Bar chart (`echarts_timeseries_bar`) | `model_year` on x-axis, `MAX(count)` metric                 |
+| Top 10 EV Models by Registration Count   | `top_10_electrical_vehicles_registration_count` | Table                                  | Raw records, 10 rows, columns:`model`, `vehicles_count`     |
+| YoY Change in EV Registrations by County | `yoy_change`                                    | Table                                  | Raw records, default filter `county = Asotin`, search enabled |
+| Vehicle Locations                        | `vehicle_location`                              | Deck.GL scatter map                    | Colored by `is_cafv_eligibility`, auto-zoomed                 |
+
+### Execution order inside the script
+
+1. Authenticate with Superset (access token + CSRF token).
+2. Create the PostgreSQL database connection (skipped if already exists).
+3. Register all four datasets (skipped individually if already exist).
+4. Delete all existing charts.
+5. Create all charts by iterating over `GRAPH_PAYLOAD`.
 
 ---
 
