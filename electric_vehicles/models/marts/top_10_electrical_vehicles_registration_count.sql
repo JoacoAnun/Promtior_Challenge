@@ -5,5 +5,5 @@ SELECT
 	COUNT(*) AS vehicles_count
 FROM {{ ref('electrical_vehicles_silver')}}
 GROUP BY model
-ORDER BY vechicles_count DESC
+ORDER BY vehicles_count DESC
 LIMIT 10
